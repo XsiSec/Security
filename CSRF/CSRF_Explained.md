@@ -12,7 +12,7 @@ CSRF its a technic that let you pass data from one domain to another without any
 
 
 GET
-<img src="http://i.imgur.com/123.jpg"/>
+[code]<img src="http://i.imgur.com/123.jpg"/>[/code]
 
 if we test the Web-browser, we will see the picture because we have got privileges, a request could look like below:
 
