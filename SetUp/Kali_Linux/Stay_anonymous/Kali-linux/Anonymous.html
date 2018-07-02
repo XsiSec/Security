@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Xsi Anonymous Guide</title>
+</head>
+<body>
+<div class="inner" id="msg_1811">I&#039;m using <a href="https://www.debian.org/" class="bbc_link" target="_blank">Linux Debian</a>.
+    <br />Linux Ubuntu is based on Debian - it prioritizes convenience over security. Think of Ubuntu as <em>the most simple, but least secure os</em>.
+    <br /><a href="https://tails.boum.org/" class="bbc_link" target="_blank">Tails</a> and <a href="http://kkkkkkkkkk63ava6.onion/" class="bbc_link" target="_blank">Whonix</a> is also based on Debian. This guide will work here, too, though it is not recommended to modify Tails.
+    <br />
+    <br /><strong>&#8227; 1. Keep your system up-to date</strong>
+    <br />It&#039;s important that all packages stay up-to-date for security purposes - An outdated package might contain bugs or exploits.
+    <br />
+    <br /><strong>1.1) Update the Package Lists:</strong>
+    <br />
+    <br />sudo apt-get update
+    <br />
+    <br /># This command updates the list of available packages and their versions, but it does not install or upgrade any packages. It is important to keep the package list up-to date as well.
+    <br />
+    <br /><strong>1.2) Upgrade:</strong>
+    <br />
+    <br />sudo apt-get upgrade
+    <br />sudo apt-get dist-upgrade
+    <br />
+    <br /># Upgrade means it will upgrade packages
+    <br /># dist-upgrade means it will upgrade the base operating system
+    <br /># You shoud always run both commands - they are equally important!
+    <br />
+    <br /><strong>1.3) Warning! Never install unsigned packages!</strong>
+    <br />
+    <br />If a message like this appears:
+    <br />
+    <br />WARNING: The following packages cannot be authenticated!
+    <br />icedove
+    <br />Install these packages without verification [y/N]?
+    <br />
+    <br />Then don&#039;t proceed! Press N and &lt;enter&gt;. Running apt-get update again should fix it. If not, something is broken or it is a man-in-the-middle attack.
+    <br />
+    <br /><strong>1.4) Restart services after upgrading</strong>
+    <br />
+    <br />It&#039;s no point in upgrading your system, but not restarting services - the updates will only apply after the services are restarted. The most common (but hardest) way is to reboot your entire system.
+    <br />
+    <br />Or by using <em>needrestart</em>: Needrestart will warn you about outdated processes - it will even restart said services:
+    <br />
+    <br /># Install needrestart
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install needrestart
+    <br />
+    <br /># Needrestart will automatically initiate after installing or upgrading packages, but it can also be manualy started:
+    <br />
+    <br />sudo needrestart
+    <br />
+    <br />Keep in mind that upgrading or modifying the kernel will require a full system reboot!
+    <br />
+    <br />
+    <br /><strong>&#8227; 2. Hardening (security by isolation)</strong>
+    <br />
+    <br /><strong>2.1) AppArmor</strong>
+    <br /><em>AppArmor is a Mandatory Access Control framework. When enabled, AppArmor confines programs according to a set of rules that specify what files a given program can access. This proactive approach helps protect the system against both known and unknown vulnerabilities.</em>
+    <br />
+    <br />AppArmor provides a number of advantages:
+    <br />- It protects the operating system and applications from external or internal threats, including zero-day attacks.
+    <br />- &quot;Good behavior&quot; is enforced and it mitigates exploits via unknown application flaws.
+    <br />- AppArmor security policies define the system resources that individual applications can access, and with what privileges. For instance:
+    <br />&nbsp; - Network access.
+    <br />&nbsp; - Raw socket access.
+    <br />&nbsp; - Read, write or execute file permissions on specific paths.
+    <br />
+    <br />By default, AppArmor will protect software like: Tor, Tor Browser, Pidgin (chat client), Thunderbird (e-mail client), Evince (pdf viewer), Totem (video player) and many more.
+    <br />
+    <br /># Install AppArmor and extra AppArmor profiles:
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install apparmor apparmor-profiles apparmor-profiles-extra
+    <br />
+    <br /># Apply AppArmor:
+    <br />
+    <br />sudo nano /etc/default/grub
+    <br />
+    <br />Change: GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet&quot;
+    <br />Into: GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet apparmor=1 security=apparmor&quot;
+    <br />
+    <br /># Update GRUB &amp; reboot system:
+    <br />
+    <br />sudo update-grub
+    <br />sudo reboot
+    <br />
+    <br />
+    <br /><strong>2.2) Seccomp</strong>
+    <br /><em>Seccomp stands for secure computing mode. It is a simple sandboxing tool in the Linux kernel, available since Linux version 2.6.12. When enabling seccomp, the process enters a &quot;secure mode&quot; where a very small number of system calls are available (exit(), read(), write(), sigreturn()). Writing code to work in this environment is difficult; for example, dynamic memory allocation (using brk() or mmap(), either directly or to implement malloc()) is not possible.</em>
+    <br />
+    <br />Strongly consider enabling seccomp, since it is very easily applied and provides additional sandboxing protection for the Tor process.
+    <br />
+    <br /># Edit <em>/etc/tor/torrc</em>:
+    <br />
+    <br />sudo nano /etc/tor/torrc
+    <br />
+    <br /># Add this line:
+    <br />
+    <br />Sandbox 1
+    <br />
+    <br /># Then restart Tor:
+    <br />
+    <br />sudo service tor restart
+    <br />
+    <br /><strong>2.3) Firejail</strong>
+    <br /><em>Firejail is a SUID program that reduces the risk of security breaches by restricting the running environment of untrusted applications using Linux namespaces and seccomp-bpf. It allows a process and all its descendants to have their own private view of the globally shared kernel resources, such as the network stack, process table, mount table. Written in C with virtually no dependencies, the software runs on any Linux computer with a 3.x kernel version or newer. The sandbox is lightweight, the overhead is low. There are no complicated configuration files to edit, no socket connections open, no daemons running in the background. All security features are implemented directly in Linux kernel and available on any Linux computer.</em>
+    <br />
+    <br />
+    <br /># Install Firejail:
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install firejail
+    <br />
+    <br /># How to use Firejail:
+    <br />
+    <br />If I want to Firejail Firefox I manually run this command in terminal:
+    <br />
+    <br />firejail firefox
+    <br />
+    <br /># You can also automatically run applications with Firejail. Depending on your desktop environment.
+    <br /># I run GNOME so I will install Alacarte:
+    <br />
+    <br />sudo apt-get install alacarte gnome-menus
+    <br />
+    <br /># If you run XFCE:
+    <br />
+    <br />sudo apt-get install menulibre
+    <br />
+    <br /># Or KDE:
+    <br />
+    <br />sudo apt-get install kmenuedit
+    <br />
+    <br /># Find the appropiate application and add <em>firejail</em> to the front.
+    <br /># For example:
+    <br />
+    <br />firefox-esr %U
+    <br />firejail firefox-esr%U
+    <br />
+    <br />
+    <br /><strong>&#8227; 3. Networking</strong>
+    <br />
+    <br /><strong>3.1) Firewall (ufw)</strong>
+    <br />Uncomplicated Firewall (UFW) is a front-end for iptables.
+    <br />iptables is a firewall that runs inside the Linux kernel.
+    <br />
+    <br /># Install UFW:
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install ufw
+    <br />
+    <br /># Delete previous UFW / iptables chains:
+    <br />
+    <br />sudo iptables -F
+    <br />sudo iptables -X
+    <br />
+    <br /># Enable UFW:
+    <br />
+    <br />sudo ufw enable
+    <br />
+    <br /># Block all connections:
+    <br />
+    <br />sudo ufw default deny incoming
+    <br />sudo ufw default deny outgoing
+    <br />sudo ufw default deny forward
+    <br />
+    <br /># Whitelist ports of choice - I will allow DNS (port 53), Tor (port 9001, 9030, 9050), Tor Browser (port 9150), HTTP (port 80) and HTTPS (port 443).
+    <br /># Accord adjustingly. List of commonly used ports can be found <a href="https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers" class="bbc_link" target="_blank">here</a>
+    <br />
+    <br />sudo ufw allow 53
+    <br />sudo ufw allow 9001/tcp
+    <br />sudo ufw allow 9030/tcp
+    <br />sudo ufw allow 9050/tcp
+    <br />sudo ufw allow 9150/tcp
+    <br />sudo ufw allow 80/tcp
+    <br />sudo ufw allow 443/tcp
+    <br />
+    <br /># Check the status of UFW:
+    <br />
+    <br />sudo ufw status verbose
+    <br />
+    <br /><strong>3.2) MAC Spoofing (macchanger)</strong>
+    <br />
+    <br /># Install macchanger:
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install macchanger
+    <br />
+    <br /># If you want a GUI:
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install macchanger-gtk
+    <br />
+    <br /># Spoof MAC Adress:
+    <br />## Disconnect from the internet
+    <br />## My network interface is enp2s0. Accord adjustingly.
+    <br />
+    <br />sudo macchanger -r enp2s0
+    <br />
+    <br />## Re-connect to the internet
+    <br />## Verify macchanger is working properly
+    <br />
+    <br />sudo macchanger --show enp2s0
+    <br />
+    <br /><strong>3.3) IPv4 / IPv6</strong>
+    <br />Tor does not yet support IPv6 so we will disable it:
+    <br />
+    <br /># Edit sysctl file:
+    <br />
+    <br />sudo nano /etc/sysctl.conf
+    <br />
+    <br /># Add these lines:
+    <br />
+    <br />net.ipv6.conf.all.disable_ipv6 = 1
+    <br />net.ipv6.conf.default.disable_ipv6 = 1
+    <br />net.ipv6.conf.lo.disable_ipv6 = 1
+    <br />net.ipv6.conf.enp2s0.disable_ipv6 = 1
+    <br />
+    <br /># Also be sure to add extra lines for other network interfaces you want to disable IPv6.
+    <br />
+    <br /><strong>3.4) MiTM-Attacks (and how to protect yourself)</strong>
+    <br />
+    <br />By default, all Operating Systems accept ICMP redirects - this allows someone on your network to redirect DNS to their own servers.
+    <br />
+    <br />We don&#039;t want this so we disable ICMP redirects.
+    <br />
+    <br /># Edit sysctl file
+    <br />
+    <br />sudo nano /etc/sysctl.conf
+    <br />
+    <br /># Add these lines:
+    <br />net.ipv4.conf.all.accept_redirects = 0
+    <br />net.ipv6.conf.all.accept_redirects = 0
+    <br />
+    <br />
+    <br /><strong>3.5) TCP Timestamps</strong>
+    <br />TCP Timestamps leaks system information down to the millisecond. Leaks system uptime. Allow fingerprinting of devices behind a router. Included in every TCP packet.
+    <br />
+    <br /># Disable it:
+    <br />
+    <br />sudo nano /etc/sysctl.conf
+    <br />
+    <br /># Add the following line:
+    <br />
+    <br />net.ipv4.tcp_timestamps = 0
+    <br />
+    <br /># Apply changes:
+    <br />
+    <br />sudo sysctl -p
+    <br />
+    <br /><strong>3.6) ICMP Timestamps</strong>
+    <br /># Leaks host time in query replies.
+    <br />
+    <br /># ICMP Timestamps are automaticcaly disabled when blocking incoming connections (we have already done this).
+    <br />
+    <br /><strong>3.7) NTP Leaks</strong>
+    <br />NTP is an acronym for <em>Network Time Protocol</em>.
+    <br />Normally, your computer&#039;s time and timezone is set by the internet. This is bad for your security / privacy.
+    <br />Insecure time synchronization and leaking time data makes a variety of advanced attacks possible:
+    <br />
+    <br />- Replay Attacks:
+    <br />* Feeding old Tor consensus.
+    <br />* Feeding old/outdated/known vulnerable updates and (https) certificates. Cryptographic verification depends on system clock: A clock two years in past will accept certificates/updates, which have been expired/revoked for two years.
+    <br />
+    <br />- Remote Device Fingerprinting:
+    <br />Clock leaks from software on the host and clock leaks from application-level protocols on your computer allow a passive adversary to easily link the anonymous and non-anonymous traffic to the same machine. Active clock skew attacks can trivially be mounted to deanonymize users.&nbsp;&nbsp;&nbsp;
+    <br />
+    <br />- Denial of Service (DoS/DDoS Attacks):
+    <br />The UDP based NTP protocol can be abused to send much larger replies that can overwhelm a system. These are known as amplification attacks
+    <br />
+    <br />- Locating Onion Services:
+    <br />Timers can leak data about CPU. Related activity data that can allow deanonymization of an Onion Service under some (extreme) circumstances.
+    <br />
+    <br />- Remote Code Execution:
+    <br />NTP is a buggy and ancient protocol. Flaws in NTP clients can be remotely exploited to give an attacker control over the system. The unencrypted and unauthenticated nature of NTP makes this trivial for network adversaries of any size.
+    <br />
+    <br /># Disable NTP
+    <br />
+    <br />sudo timedatectl set-ntp 0
+    <br />
+    <br /># or
+    <br />
+    <br />sudo systemctl disable systemd-timesyncd.service
+    <br />
+    <br /># Delete NTP
+    <br />
+    <br />sudo apt-get purge ntp*
+    <br />sudo apt-get autoremove
+    <br />
+    <br /># Manually configure time / time zone
+    <br /># Note: Timezone should always be set to UTC
+    <br />
+    <br /># Timezone:
+    <br />date --set utc
+    <br /># YYYY-MM-DD:
+    <br />date --set 1998-11-02
+    <br /># HH-MM-SS
+    <br />date --set 21:08:00
+    <br />
+    <br /># Clone system time to hardware clock
+    <br />hwclock --systohc
+    <br />
+    <br />
+    <br />
+    <br />
+    <br /><strong>&#8227; 4. Tor-ifying system</strong>
+    <br />
+    <br /><strong>4.1) Resolve all DNS through Tor (Avoid DNS Leaks / DNS Poisoning)</strong>
+    <br />
+    <br /># DNS is handled through the <em>/etc/resolv.conf</em> file
+    <br /># By default your DNS is assigned by your ISP. To resolve it through Tor, do the following:
+    <br />
+    <br /># Add <em>DNSPort 53</em> to the <em>/etc/tor/torrc</em> file
+    <br />
+    <br /># Then restart Tor:
+    <br />
+    <br />sudo service tor restart
+    <br />
+    <br /># Now delete your /etc/resolv.conf file:
+    <br />
+    <br />sudo rm -r /etc/resolv.conf
+    <br />
+    <br /># Then make a new one:
+    <br />
+    <br />sudo nano /etc/resolv.conf
+    <br />
+    <br /># It should look like this:
+    <br />
+    <br />nameserver 127.0.0.1
+    <br />
+    <br /># Restart your network manager (or system) to apply the changes.
+    <br />
+    <br /><strong>4.2) Onionizing Repositories</strong>
+    <br />Apt traffic is clear web and unencrypted (http) by default. To route all apt traffic through Tor Hidden Services:
+    <br />
+    <br /># Install apt-transport-tor:
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install apt-transport-tor
+    <br />
+    <br /># Edit sources.list:
+    <br />
+    <br />sudo nano /etc/apt/sources.list
+    <br />
+    <br /># (this is how my file looks (copy paste if you want to)):
+    <br />
+    <br />#---------------------------------------------------------------------------------------------------------------#
+    <br /># deb cdrom:[Debian GNU/Linux 9.0.0 _Stretch_ - Official amd64 NETINST 20170617-13:06]/ stretch main
+    <br />
+    <br />#deb cdrom:[Debian GNU/Linux 9.0.0 _Stretch_ - Official amd64 NETINST 20170617-13:06]/ stretch main
+    <br />
+    <br />deb tor+http://vwakviie2ienjx6t.onion/debian/ stretch main
+    <br />#deb http://ftp.us.debian.org/debian/ stretch main
+    <br />
+    <br />deb tor+http://sgvtcaew4bxjd7ln.onion/debian-security stretch/updates main
+    <br />#deb http://security.debian.org/debian-security stretch/updates main
+    <br />
+    <br /># stretch-updates, previously known as &#039;volatile&#039;
+    <br />deb tor+http://vwakviie2ienjx6t.onion/debian/ stretch-updates main
+    <br />#deb http://ftp.us.debian.org/debian/ stretch-updates main
+    <br />
+    <br />deb tor+http://sdscoq7snqtznauu.onion/torproject.org stretch main
+    <br />#deb http://deb.torproject.org/torproject.org stretch main
+    <br />#---------------------------------------------------------------------------------------------------------------#
+    <br />
+    <br /># Update the package list:
+    <br />
+    <br />sudo apt-get update
+    <br />
+    <br /><strong>4.3) Run any software through Tor with torsocks</strong>
+    <br />
+    <br /># Install torsocks:
+    <br />
+    <br />sudo apt-get update
+    <br />sudo apt-get install torsocks
+    <br />
+    <br /># How to use torsocks
+    <br />
+    <br />torsocks [commnand]
+    <br />
+    <br /># For example, I want to run Electrum through Tor (yes I know you can set proxy in Electrum, but still...):
+    <br />
+    <br />torsocks electrum
+    <br />
+    <br />
+    <br />
+</div>
+
+</body>
+
+</html>

